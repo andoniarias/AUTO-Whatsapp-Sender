@@ -2,6 +2,11 @@ import sqlite3
 import pywhatkit
 import time
 from datetime import datetime, timedelta
+import logging
+
+# Configuración del archivo de log para registrar errores
+logging.basicConfig(filename='error_log.txt', level=logging.ERROR, 
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 # Conexión a las bases de datos
 conn_pedidos = sqlite3.connect('pedidos.db')
@@ -34,9 +39,6 @@ delay = 60
 # Hora y minuto inicial para enviar el primer mensaje
 hora_inicio = 10
 minuto_inicio = 0
-
-# Archivo de log para registrar errores
-log_file = open("error_log.txt", "a")
 
 # Función para obtener el ASIN y MaterialTipoUUID a partir del SKU
 def obtener_asin_y_tipo(sku):
@@ -102,11 +104,11 @@ for pedido in pedidos:
 
     except Exception as e:
         # Registrar el error en el log y continuar con el siguiente pedido
-        log_file.write(f"Error con el cliente {nombre}, teléfono: {telefono_formateado}, producto: {producto}, SKU: {pedido[4]} - Error: {str(e)}\n")
+        logging.error(f"Error con el cliente {nombre}, teléfono: {telefono_formateado}, producto: {producto}, SKU: {pedido[4]} - Error: {str(e)}")
         print(f"Error con el cliente {nombre}, teléfono: {telefono_formateado}. Error: {str(e)}")
 
-# Cerrar el archivo de log y las conexiones a las bases de datos
-log_file.close()
+# Cerrar las conexiones a las bases de datos
 conn_pedidos.close()
 conn_sku_asin.close()
 conn_mensajes.close()
+
